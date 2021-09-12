@@ -29,3 +29,38 @@ def kmeans_display(X, label):
     plt.show()
     
 kmeans_display(X, original_label)
+plt.scatter(points[:, 0], points[:, 1])
+def identify_centroids(X, k):
+    centroids = X.copy()
+    np.random.shuffle(centroids)
+    return centroids[:k]
+plt.scatter(X[:, 0], X[:, 1])
+centroids = identify_centroids(X, 3)
+plt.scatter(centroids[:, 0], centroids[:, 1], c='r', s=100)
+def closest_centroid(X, centroids):
+    distances = np.sqrt(((X - centroids[:, np.newaxis])**2).sum(axis=2))
+    return np.argmin(distances, axis=0)
+def move_centroids(X, closest, centroids):
+    return np.array([X[closest==k].mean(axis=0) for k in range(centroids.shape[0])])
+def k_mean(X, k):
+  centroids = identify_centroids(X, k)
+  running = True
+  while running:
+    closest = closest_centroid(X, centroids)
+    old_centroids = centroids
+    centroids = move_centroids(X, closest, centroids)
+    # print(centroids)
+    # print(old_centroids)
+    if (old_centroids == centroids).all():
+      running = False
+  return closest,centroids
+def k_display(X,closest,centroids):
+    plt.scatter(X[:, 0], X[:, 1], c=closest)
+    plt.scatter(centroids[:, 0], centroids[:, 1], c='r', s=100)
+    plt.show()
+closest,centroids = k_mean(X, 3)
+k_display(X,closest,centroids)
+closest,centroids = k_mean(X, 4)
+k_display(X,closest,centroids)
+closest,centroids = k_mean(X, 5)
+k_display(X,closest,centroids)
